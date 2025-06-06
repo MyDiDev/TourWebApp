@@ -7,11 +7,11 @@ def navbar() -> rx.Component:
     return rx.box(
         rx.desktop_only(
             rx.hstack(
-                rx.heading("TurisGo", size="9"),
+                rx.heading("TurisGo", size="8", color="white"),
                 rx.hstack(
-                    rx.link("Inicio", color="white", size="5"),
-                    rx.link("Descripciones", color="white", size="5"),
-                    rx.link("Agendar", color="white", size="5"),
+                    rx.link("Inicio", color="white", size="5", href="#"),
+                    rx.link("Sobre Nosotros", color="white", size="5", href="#about"),
+                    rx.link("Contactanos", color="white", size="5", href="#contact"),
                     justify="center",
                     align="center",
                     padding_top="1em",
@@ -45,7 +45,7 @@ def navbar() -> rx.Component:
         ),
         rx.mobile_and_tablet(
             rx.hstack(
-                rx.heading("TurisGo", size="7"),
+                rx.heading("TurisGo", size="7", color="white"),
                 rx.menu.root(
                     rx.menu.trigger(
                         rx.icon_button(""),
