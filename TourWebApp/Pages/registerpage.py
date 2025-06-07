@@ -1,9 +1,24 @@
 import reflex as rx
+from ..DB.connection import User
 
 # Handle inputs, add in the database, and redirect to login page 
 
 class RegisterState(rx.State):
-    pass
+    
+    @rx.event
+    def add_new_user(self, data):
+        for row in data:
+            if len(row) < 0:
+                yield rx.toast.error("Llene las entradas")
+                return
+            
+        username = data.get("username")
+        password = data.get("password")
+        email = data.get("email")
+
+        user_conn = User(username, email, password, 'user')
+        user_conn.add_user()
+        rx.redirect("/home")
 
 def register_page() -> rx.Component:
     return rx.fragment(
@@ -67,6 +82,7 @@ def register_page() -> rx.Component:
                                         rx.button("Registrarme", size="3", width="100%", style={"cursor":"pointer"}),
                                         margin_y="1.5em",
                                     ),
+                                    on_submit=RegisterState.add_new_user,
                                 ),
                                 width="85%",
                                 padding="1em",

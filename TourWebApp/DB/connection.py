@@ -6,41 +6,50 @@ class Connection:
             host="127.0.0.1",
             port=3306,
             user="root",
-            password=")A{IjWm1}h,H+u-^"
+            database="TourBD",
+            password=")A{IjWm1}h,H+u-^",
         )
         self.cur = self.cnx.cursor()
 
-class User(Connection):
+class User:
     def __init__(self, name:str, email:str, password:str, type:str):
         self.name = name
         self.email = email
         self.password = password
         self.type = type
-        self.cur = super().cur
+        self.conn = Connection()
+        self.cur = self.conn.cur
+        self.cnx = self.conn.cnx
     
     def add_user(self):
         try:
-            self.cur.callproc("SP_INSERTAR_USUARIOS", [self.name, self.password, self.type])
-        except Exception:
-            raise mysql.connector.errors
+            self.cur.callproc("SP_INSERTAR_USUARIOS", [self.name, self.email, self.password, self.type])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
 
     def del_user(self, id:int):
         try:
             self.cur.callproc("SP_ELIMINAR_USUARIOS", [id])
-        except Exception:
-            raise mysql.connector.errors
+            self.cnx.commit()
+        except Exception as e:
+            raise e
 
     def upt_user(self, id:int):
         try:
-            self.cur.callproc("SP_ACTUALIZAR_USUARIOS", [id, self.name, self.password, self.type])
-        except Exception:
-            raise mysql.connector.errors
+            self.cur.callproc("SP_ACTUALIZAR_USUARIOS", [self.name, self.email, self.password, self.type, id])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
 
     def read_user(self):
         try:
             self.cur.callproc("SP_LEER_USUARIOS")
-        except Exception:
-            raise mysql.connector.errors
+            for result in self.cur.stored_results():
+                users = result.fetchall()
+            return users
+        except Exception as e:
+            raise e
     
 
 class Offer:
@@ -51,12 +60,80 @@ class Offer:
         self.details = details
         self.itinerary = itinerary
         self.price = price
+        self.conn = Connection()
+        self.cur = self.conn.cur
+        self.cnx = self.conn.cnx
+
+    def add_offer(self):
+        try:
+            self.cur.callproc("SP_INSERTAR_OFERTAS", [self.title, self.description, self.img_url, self.details, self.itinerary, self.price])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def del_offer(self, id:int):
+        try:
+            self.cur.callproc("SP_ELIMINAR_OFERTAS", [id])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def upt_offer(self, id:int):
+        try:
+            self.cur.callproc("SP_ACTUALIZAR_OFERTAS", [self.title, self.description, self.img_url, self.details, self.itinerary, self.price, id])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def read_offer(self):
+        try:
+            self.cur.callproc("SP_LEER_OFERTAS")
+            for result in self.cur.stored_results():
+                offers = result.fetchall()
+            return offers
+        except Exception as e:
+            raise e
 
 class Contact:
     def __init__(self, name:str, email:str, message:str):
         self.name = name
         self.email = email
         self.message = message
+        self.conn = Connection()
+        self.cur = self.conn.cur
+        self.cnx = self.conn.cnx
+
+    def add_contact(self) -> None:
+        try:
+            self.cur.callproc("SP_INSERTAR_CONTACTOS", [self.name, self.email, self.message])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def del_contact(self, id:int) -> None:
+        try:
+            self.cur.callproc("SP_ELIMINAR_CONTACTOS", [id])
+            self.cnx.commit()
+            print(f"Successfully deleted contact with ID: {id}")
+        except Exception as e:
+            raise e
+
+    def upt_contact(self, id:int) -> None:
+        try:
+            self.cur.callproc("SP_ACTUALIZAR_CONTACTOS", [self.name, self.email, self.message, id])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def read_contact(self) -> None | list[tuple]:
+        try:
+            self.cur.callproc("SP_LEER_CONTACTOS")
+            for result in self.cur.stored_results():
+                contacts:list[tuple] = result.fetchall()
+            return contacts
+        except Exception as e:
+            raise e
+    
 
 class Schedule:
     def __init__(self, name:str, email:str, phone:str, id_tour:int, id_user:int, id_payment:int, date:str, people_amount:int):
@@ -68,5 +145,75 @@ class Schedule:
         self.id_payment = id_payment
         self.date = date
         self.people_amount = people_amount
+        self.conn = Connection()
+        self.cur = self.conn.cur
+        self.cnx = self.conn.cnx
 
-    
+    def add_schedule(self):
+        try:
+            self.cur.callproc("SP_INSERTAR_RESERVAS", [self.name, self.email, self.phone, self.id_tour, self.id_user, self.id_payment, self.date, self.people_amount])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def del_schedule(self, id:int):
+        try:
+            self.cur.callproc("SP_ELIMINAR_RESERVAS", [id])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def upt_schedule(self, id:int):
+        try:
+            self.cur.callproc("SP_ACTUALIZAR_RESERVAS", [self.name, self.email, self.phone, self.id_tour, self.id_user, self.id_payment, self.date, self.people_amount, id])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def read_schedule(self):
+        try:
+            self.cur.callproc("SP_LEER_RESERVAS")
+            for result in self.cur.stored_results():
+                schedules = result.fetchall()
+            return schedules
+        except Exception as e:
+            raise e
+
+class Transactions:
+    def __init__(self, metodo_pago: str, estado_pago: str, monto: float):
+        self.metodo_pago = metodo_pago
+        self.estado_pago = estado_pago
+        self.monto = monto
+        self.conn = Connection()
+        self.cur = self.conn.cur
+        self.cnx = self.conn.cnx
+
+    def add_payment(self):
+        try:
+            self.cur.callproc("SP_INSERTAR_PAGOS", [self.metodo_pago, self.estado_pago, self.monto])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def del_payment(self, id_pago: int):
+        try:
+            self.cur.callproc("SP_ELIMINAR_PAGOS", [id_pago])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def upt_payment(self, id_pago: int):
+        try:
+            self.cur.callproc("SP_ACTUALIZAR_PAGOS", [self.metodo_pago, self.estado_pago, self.monto, id_pago])
+            self.cnx.commit()
+        except Exception as e:
+            raise e
+
+    def read_payments(self):
+        try:
+            self.cur.callproc("SP_LEER_PAGOS")
+            for result in self.cur.stored_results():
+                payments = result.fetchall()
+            return payments
+        except Exception as e:
+            raise e

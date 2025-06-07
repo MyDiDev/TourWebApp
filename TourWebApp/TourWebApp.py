@@ -3,6 +3,10 @@ from .Pages.homepage import home_page
 from .Pages.loginpage import login_page
 from .Pages.registerpage import register_page
 from .Pages.Admin.adminpage import admin_page
+from .Pages.Admin.Contacts.mainpage import contacts_page
+from .Pages.Admin.Offers.mainpage import offers_page
+from .Pages.Admin.Schedules.mainpage import schedules_page
+from .Pages.Admin.Transactions.mainpage import transaction_page
 from rxconfig import config
 
 app = rx.App(
@@ -23,3 +27,9 @@ app.add_page(home_page, route="/home")
 
 #Admin page
 app.add_page(admin_page, route="/admin")
+#contacts
+app.add_page(contacts_page, route="/admin/contacts")
+app.add_page(offers_page, route="/admin/offers")
+app.add_page(schedules_page, route="/admin/schedules")
+app.add_page(transaction_page, route="/admin/transactions")
+# app.add_page(contacts_page, route="/admin/users")
