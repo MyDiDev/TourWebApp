@@ -9,10 +9,6 @@ def footer() -> rx.Component:
             rx.hstack(
                 rx.heading("TourGo", size="8"),
                 rx.text("© Copyright - 2025", text_align="center"),
-                rx.hstack(
-                    rx.button("Registrate", background="none", border="solid 1px white", style={"cursor":"pointer"}),
-                    rx.button("Inicia Sesion", style={"cursor":"pointer"}),
-                ),
                 justify="between",
                 align="center",
                 width="100%",
@@ -27,6 +23,7 @@ def footer() -> rx.Component:
                 width="100%",
             ),
         ),
-        padding="1em",
+        style={"background-color":"rgb(24,24,24)"},
+        padding="2em",
         margin_top="20dvh",
     )

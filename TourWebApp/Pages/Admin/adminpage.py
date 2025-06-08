@@ -1,7 +1,6 @@
 import reflex as rx
 # from ..homepage import render_page
 
-
 class AdminPageState(rx.State):
     pass
 
@@ -21,11 +20,31 @@ def admin_page() -> rx.Component:
                         rx.separator(margin_y="1.5em", size="3", width="100%"),
 
                         rx.vstack(
-                            rx.button("Usuarios", width="100%", size="4", style={"cursor":"pointer"}),
-                            rx.button("Contactos", width="100%", size="4", style={"cursor":"pointer"}),
-                            rx.button("Ofertas", width="100%", size="4", style={"cursor":"pointer"}),
-                            rx.button("Pagos", width="100%", size="4", style={"cursor":"pointer"}),
-                            rx.button("Reservas", width="100%", size="4", style={"cursor":"pointer"}),
+                            rx.link(
+                                rx.button("Usuarios", width="100%", size="4", style={"cursor":"pointer"}),
+                                href="/admin/users",
+                                width="100%",
+                            ),
+                            rx.link(
+                                rx.button("Contactos", width="100%", size="4", style={"cursor":"pointer"}),
+                                href="/admin/contacts",
+                                width="100%",
+                            ),
+                            rx.link(
+                                rx.button("Ofertas", width="100%", size="4", style={"cursor":"pointer"}),
+                                href="/admin/offers",
+                                width="100%",
+                            ),
+                            rx.link(
+                                rx.button("Pagos", width="100%", size="4", style={"cursor":"pointer"}),
+                                href="/admin/transactions",
+                                width="100%",
+                            ),
+                            rx.link(
+                                rx.button("Reservas", width="100%", size="4", style={"cursor":"pointer"}),
+                                href="/admin/schedules",
+                                width="100%",
+                            ),
                             width="100%",
                             spacing="5",
                             margin_top="1em",

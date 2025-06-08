@@ -1,85 +1,69 @@
 import reflex as rx
-from ....DB.connection import Offer
-from ....Uploader.uploader import upload_image
+from ....DB.connection import User
 
 class State(rx.State):
     data: list[dict] = []
     image_url: str = ""
 
     def get_data(self):
-        offer_connection = Offer("", "", "","","",0)
-        tuple_data = offer_connection.read_offer()
+        user_connection = User("","","","")
+        tuple_data = user_connection.read_user()
         
         self.data = [
             {
-                "id":int(offer[0]),
-                "title":str(offer[1]),
-                "description":str(offer[2]),
-                "image_url":str(offer[3]),
-                "details":str(offer[4]),
-                "itinerary":str(offer[5]),
-                "price":float(offer[6]),
+                "id":int(user[0]),
+                "name":str(user[1]),
+                "email":str(user[2]),
+                "password":str(user[3]),
+                "type":str(user[4]),
             }
-            for offer in tuple_data
+            for user in tuple_data
         ]
 
         print(self.data)
 
-    def handle_upload(self, file: list[rx.UploadFile]):
-        for uploaded_file in file:
-            self.image_url = upload_image(uploaded_file.file.read())
-            print("image uploaded")
 
     def delete_row(self, id:str):
         print(f"Deleting row with ID: {id}")
-        offer_connection = Offer("", "", "","","",0)
-        offer_connection.del_offer(int(id))
+        user_connection = User("", "", "","","",0)
+        user_connection.del_user(int(id))
 
         self.get_data()
         yield rx.toast.info("Registro Eliminado")
         return
 
     def add_row(self, data):
-        title = data.get("title")
-        description = data.get("description")
-        image = data.get("description")
-        image_url = self.image_url
-        details = data.get("details")
-        itinerary = data.get("itinerary")
-        price = float(data.get("price"))
+        username = data.get("username")
+        password = data.get("password")
+        email = data.get("email")
+        type = data.get("type")
         
 
-        offer_connection = Offer(title, description, image_url, details, itinerary, price)
-        offer_connection.add_offer()
+        user_connection = User(username, password, email, type)
+        user_connection.add_user()
         self.get_data()
         yield rx.toast.success("Oferta Agregada Exitosamente", close_button=True)
 
     def update_row(self, data):
         id = int(data["id"])
-        title = data.get("title")
-        description = data.get("description")
-        image = data.get("description")
-        image_url = self.image_url
-        details = data.get("details")
-        itinerary = data.get("itinerary")
-        price = data.get("price")
-        
+        username = data.get("username")
+        password = data.get("password")
+        email = data.get("email")
+        type = data.get("type")
 
-        offer_connection = Offer(title, description, image_url, details, itinerary, price)
-        offer_connection.upt_offer(id)
+        user_connection = User(username, password, email, type)
+        user_connection.upt_user(id)
         self.get_data()
         yield rx.toast.success("Registro Actualizado Exitosamente", close_button=True)
 
 
-def data_row(offer) -> rx.Component:
+def data_row(user) -> rx.Component:
     return rx.table.row(
-        rx.table.cell(offer["id"]),
-        rx.table.cell(offer["title"]),
-        rx.table.cell(offer["description"]),
-        rx.table.cell(offer["image_url"]),
-        rx.table.cell(offer["details"]),
-        rx.table.cell(offer["itinerary"]),
-        rx.table.cell(offer["price"]),
+        rx.table.cell(user["id"]),
+        rx.table.cell(user["name"]),
+        rx.table.cell(user["email"]),
+        rx.table.cell(user["password"]),
+        rx.table.cell(user["type"]),
         rx.table.cell(
             rx.hstack(
                 rx.dialog.root(
@@ -89,34 +73,34 @@ def data_row(offer) -> rx.Component:
                     rx.dialog.content(
                         rx.heading("Actualizar Registro", font_size="40px", margin_y=".5em"),
                         rx.form(
-                            rx.input(display="none", name="id", default_value=offer["id"]),
+                            rx.input(display="none", name="id", default_value=user["id"]),
                             rx.vstack(
                                 rx.text("Titulo:", size="4"),
-                                rx.input(placeholder="Ingrese el titulo", name="title", type="text", size='3', width="100%", default_value=offer["title"]),
+                                rx.input(placeholder="Ingrese el titulo", name="title", type="text", size='3', width="100%", default_value=user["title"]),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),
                             rx.vstack(
                                 rx.text("Descripcion:", size="4"),
-                                rx.input(placeholder="Ingrese la descripcion", name="description", type="text", size='3', width="100%", default_value=offer["description"]),
+                                rx.input(placeholder="Ingrese la descripcion", name="description", type="text", size='3', width="100%", default_value=user["description"]),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),
                             rx.vstack(
                                 rx.text("Detalles:", size="4"),
-                                rx.input(placeholder="Ingrese los detalles", name="details", type="text", size='3', width="100%", default_value=offer["details"]),
+                                rx.input(placeholder="Ingrese los detalles", name="details", type="text", size='3', width="100%", default_value=user["details"]),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),
                             rx.vstack(
                                 rx.text("Itinerario:", size="4"),
-                                rx.input(placeholder="Ingrese el itinerario", name="itinerary", type="text", size='3', width="100%", default_value=offer["itinerary"]),
+                                rx.input(placeholder="Ingrese el itinerario", name="itinerary", type="text", size='3', width="100%", default_value=user["itinerary"]),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),
                             rx.vstack(
                                 rx.text("Precio:", size="4"),
-                                rx.input(placeholder="Ingrese el precio", name="price", type="number", size='3', width="100%", default_value=offer["price"]),
+                                rx.input(placeholder="Ingrese el precio", name="price", type="number", size='3', width="100%", default_value=user["price"]),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),
@@ -137,13 +121,13 @@ def data_row(offer) -> rx.Component:
                         },
                     ),
                 ),
-                rx.button("Eliminar", size="1", on_click=lambda id=offer["id"]: State.delete_row(id), color_scheme="red"),
+                rx.button("Eliminar", size="1", on_click=lambda id=user["id"]: State.delete_row(id), color_scheme="red"),
             )
         )
     )
 
 
-def offers_table() -> rx.Component:
+def users_table() -> rx.Component:
     return rx.table.root(
         rx.table.header(
             rx.table.row(
@@ -175,7 +159,7 @@ def offers_table() -> rx.Component:
         width="100%",
     )
 
-def offers_page() -> rx.Component:
+def users_page() -> rx.Component:
     return rx.fragment(
         rx.box(
             rx.desktop_only(
@@ -249,7 +233,7 @@ def offers_page() -> rx.Component:
                             ),
                             margin_y="1.5em",
                         ),
-                        offers_table(),
+                        users_table(),
                         width="75%",
                     ),
                     justify="center",

@@ -1,9 +1,39 @@
 import reflex as rx
+from ..DB.connection import User
 
 # Handle inputs, add in the database, and redirect to home page 
 
 class LoginState(rx.State):
-    pass
+    is_logged = False
+    is_admin = False
+    username = ""
+    id = -1
+
+    @rx.event
+    def login(self, data):
+        username = data.get("username")
+        password = data.get("password")
+
+        if not username or not password:
+            yield rx.toast.error("Llene las Entradas", close_button=True)  
+            return
+        
+        user_connection = User(username, "", password, "")
+        result = user_connection.read_user_login()
+
+        print(result)
+
+        if len(result) > 0:
+            self.set(
+                is_logged=True,
+                id = int(result[0][0]),
+                username=str(result[0][1]),
+                is_admin=str(result[0][4]).lower() == "admin"
+            )
+            print("logged in")
+            yield rx.redirect(path="/home")
+        else:
+            yield rx.toast.error("Usuario Invalido, Intente otra vez") 
 
 def login_page() -> rx.Component:
     return rx.fragment(
@@ -61,6 +91,7 @@ def login_page() -> rx.Component:
                                         rx.button("Iniciar Sesion", type="submit", size="3", width="100%", style={"cursor":"pointer"}),
                                         margin_y="1.5em",
                                     ),
+                                    on_submit=LoginState.login
                                 ),
                                 width="85%",
                                 padding="1em",

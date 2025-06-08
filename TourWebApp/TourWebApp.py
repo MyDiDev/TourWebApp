@@ -1,5 +1,6 @@
 import reflex as rx
 from .Pages.homepage import home_page
+from .Pages.descriptionpage import description_page
 from .Pages.loginpage import login_page
 from .Pages.registerpage import register_page
 from .Pages.Admin.adminpage import admin_page
@@ -15,7 +16,7 @@ app = rx.App(
         panel_background="solid",
         appearance="dark",
         color_mode="dark",
-    )
+    ),
 )
 
 # Registration Managment Pages
@@ -24,6 +25,7 @@ app.add_page(register_page, route="/register"),
 
 # Pages
 app.add_page(home_page, route="/home")
+app.add_page(description_page, route="/description")
 
 #Admin page
 app.add_page(admin_page, route="/admin")

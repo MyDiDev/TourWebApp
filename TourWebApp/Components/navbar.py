@@ -1,4 +1,5 @@
 import reflex as rx
+from ..Pages.loginpage import LoginState
 
 class NavState(rx.State):
     pass
@@ -18,23 +19,33 @@ def navbar() -> rx.Component:
                     spacing="5",
                 ),
                 rx.hstack(
-                    rx.button(
-                        "Registrate",
-                        background="none",
-                        color="white",
-                        style={
-                            "border":"solid 1px white",
-                            "cursor":"pointer",
-                        },
-                        size="3"
+                    rx.cond(
+                        LoginState.is_admin,
+                        rx.box(
+                            rx.link(
+                                rx.button(
+                                    "Administrador",
+                                    background_color="white",
+                                    color="black",
+                                    size="3"
+                                ),
+                                href="/admin",
+                            ),
+                            padding_top="1em",
+                        ),
+                        rx.box(
+                            rx.link(
+                                rx.button(
+                                    LoginState.username,
+                                    background_color="white",
+                                    color="black",
+                                    size="3"
+                                ),
+                                href="#",
+                            ),
+                            padding_top="1em",
+                        ),
                     ),
-                    rx.button(
-                        "Inicia Sesion",
-                        background_color="white",
-                        color="black",
-                        size="3"
-                    ),
-                    padding_top="1em",
                 ),
                 spacing="6",
                 style={
@@ -55,28 +66,39 @@ def navbar() -> rx.Component:
                             rx.link("Inicio", color="white", size="5"),
                         ),
                         rx.menu.item(
-                            rx.link("Descripciones", color="white", size="5"),
+                            rx.link("Sobre Nosotros", color="white", size="5", href="#about"),
                         ),
                         rx.menu.item(
-                            rx.link("Agendar", color="white", size="5"),
+                            rx.link("Contactanos", color="white", size="5", href="#contact"),
                         ),
                         rx.separator(),
                         rx.menu.item(
-                            rx.button(
-                                "Registrate",
-                                background="none",
-                                color="white",
-                                style={
-                                    "border":"solid 1px white",
-                                    "cursor":"pointer",
-                                },
-                                size="3"
-                            ),
-                            rx.button(
-                                "Inicia Sesion",
-                                background_color="white",
-                                color="black",
-                                size="3"
+                            rx.cond(
+                                LoginState.is_admin,
+                                rx.box(
+                                    rx.link(
+                                        rx.button(
+                                            "Administrador",
+                                            background_color="white",
+                                            color="black",
+                                            size="3"
+                                        ),
+                                        href="/admin",
+                                    ),
+                                    padding_top="1em",
+                                ),
+                                rx.box(
+                                    rx.link(
+                                        rx.button(
+                                            LoginState.username,
+                                            background_color="white",
+                                            color="black",
+                                            size="3"
+                                        ),
+                                        href="#",
+                                    ),
+                                    padding_top="1em",
+                                ),
                             ),
                         ),
                     ),

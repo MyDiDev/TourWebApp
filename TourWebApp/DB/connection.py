@@ -50,6 +50,15 @@ class User:
             return users
         except Exception as e:
             raise e
+        
+    def read_user_login(self):
+        try:
+            self.cur.callproc("SP_LEER_USUARIOS_U", [self.name, self.password])
+            for result in self.cur.stored_results():
+                users = result.fetchall()
+            return users
+        except Exception as e:
+            raise e
     
 
 class Offer:
@@ -88,6 +97,15 @@ class Offer:
     def read_offer(self):
         try:
             self.cur.callproc("SP_LEER_OFERTAS")
+            for result in self.cur.stored_results():
+                offers = result.fetchall()
+            return offers
+        except Exception as e:
+            raise e
+        
+    def read_offer_by_id(self, id:int):
+        try:
+            self.cur.callproc("SP_LEER_OFERTAS_ID", [id])
             for result in self.cur.stored_results():
                 offers = result.fetchall()
             return offers
