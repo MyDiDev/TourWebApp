@@ -32,7 +32,7 @@ class State(rx.State):
     def add_row(self, data):
         metodo_pago = data.get("metodo_pago")
         estado_pago = data.get("estado_pago")
-        monto = data.get("monto")
+        monto = float(data.get("monto"))
 
         transaction_conn = Transactions(metodo_pago, estado_pago, monto)
         try:
@@ -46,7 +46,7 @@ class State(rx.State):
     def update_row(self, data):
         metodo_pago = data.get("metodo_pago")
         estado_pago = data.get("estado_pago")
-        monto = data.get("monto")     
+        monto = float(data.get("monto"))     
 
         transaction_conn = Transactions(metodo_pago, estado_pago, monto)
         try:
@@ -63,7 +63,7 @@ def data_row(transaction) -> rx.Component:
         rx.table.cell(transaction["id"]),
         rx.table.cell(transaction["metodo_pago"]),
         rx.table.cell(transaction["estado_pago"]),
-        rx.table.cell(str(transaction["monto"])),
+        rx.table.cell(f"{transaction["monto"]:,}"),
         rx.table.cell(
             rx.hstack(
                 rx.dialog.root(
@@ -88,7 +88,7 @@ def data_row(transaction) -> rx.Component:
                             ),
                             rx.vstack(
                                 rx.text("Monto:", size="4"),
-                                rx.input(name="monto", placeholder="Ingrese el monto", type="number", default_value=transaction["monto"], width="100%"),
+                                rx.input(name="monto", placeholder="Ingrese el monto", type="number", default_value=str(transaction["monto"]), width="100%"),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),

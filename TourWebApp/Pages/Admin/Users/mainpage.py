@@ -25,7 +25,7 @@ class State(rx.State):
 
     def delete_row(self, id:str):
         print(f"Deleting row with ID: {id}")
-        user_connection = User("", "", "","","",0)
+        user_connection = User("","","","")
         user_connection.del_user(int(id))
 
         self.get_data()
@@ -38,11 +38,10 @@ class State(rx.State):
         email = data.get("email")
         type = data.get("type")
         
-
-        user_connection = User(username, password, email, type)
+        user_connection = User(username, email, password, type)
         user_connection.add_user()
         self.get_data()
-        yield rx.toast.success("Oferta Agregada Exitosamente", close_button=True)
+        yield rx.toast.success("Registro Agregado Exitosamente", close_button=True)
 
     def update_row(self, data):
         id = int(data["id"])
@@ -51,19 +50,19 @@ class State(rx.State):
         email = data.get("email")
         type = data.get("type")
 
-        user_connection = User(username, password, email, type)
+        user_connection = User(username, email, password, type)
         user_connection.upt_user(id)
         self.get_data()
         yield rx.toast.success("Registro Actualizado Exitosamente", close_button=True)
 
 
-def data_row(user) -> rx.Component:
+def data_row(user_data) -> rx.Component:
     return rx.table.row(
-        rx.table.cell(user["id"]),
-        rx.table.cell(user["name"]),
-        rx.table.cell(user["email"]),
-        rx.table.cell(user["password"]),
-        rx.table.cell(user["type"]),
+        rx.table.cell(user_data["id"]),
+        rx.table.cell(user_data["name"]),
+        rx.table.cell(user_data["email"]),
+        rx.table.cell(user_data["password"]),
+        rx.table.cell(user_data["type"]),
         rx.table.cell(
             rx.hstack(
                 rx.dialog.root(
@@ -73,34 +72,28 @@ def data_row(user) -> rx.Component:
                     rx.dialog.content(
                         rx.heading("Actualizar Registro", font_size="40px", margin_y=".5em"),
                         rx.form(
-                            rx.input(display="none", name="id", default_value=user["id"]),
+                            rx.input(display="none", name="id", default_value=user_data["id"]),
                             rx.vstack(
-                                rx.text("Titulo:", size="4"),
-                                rx.input(placeholder="Ingrese el titulo", name="title", type="text", size='3', width="100%", default_value=user["title"]),
+                                rx.text("Nombre:", size="4"),
+                                rx.input(placeholder="Ingrese el nombre", name="username", type="text", size='3', width="100%", default_value=user_data["name"]),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),
                             rx.vstack(
-                                rx.text("Descripcion:", size="4"),
-                                rx.input(placeholder="Ingrese la descripcion", name="description", type="text", size='3', width="100%", default_value=user["description"]),
+                                rx.text("Email:", size="4"),
+                                rx.input(placeholder="Ingrese el correo", name="email", type="email", size='3', width="100%", default_value=user_data["email"]),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),
                             rx.vstack(
-                                rx.text("Detalles:", size="4"),
-                                rx.input(placeholder="Ingrese los detalles", name="details", type="text", size='3', width="100%", default_value=user["details"]),
+                                rx.text("Contraseña:", size="4"),
+                                rx.input(placeholder="Ingrese la contraseña", name="password", type="password", size='3', width="100%", default_value=user_data["password"]),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),
                             rx.vstack(
-                                rx.text("Itinerario:", size="4"),
-                                rx.input(placeholder="Ingrese el itinerario", name="itinerary", type="text", size='3', width="100%", default_value=user["itinerary"]),
-                                spacing="3",
-                                margin_y="1.5em",
-                            ),
-                            rx.vstack(
-                                rx.text("Precio:", size="4"),
-                                rx.input(placeholder="Ingrese el precio", name="price", type="number", size='3', width="100%", default_value=user["price"]),
+                                rx.text("Tipo:", size="4"),
+                                rx.input(placeholder="Ingrese el Tipo de usuario que es", name="type", type="text", size='3', width="100%", default_value=user_data["type"]),
                                 spacing="3",
                                 margin_y="1.5em",
                             ),
@@ -121,7 +114,7 @@ def data_row(user) -> rx.Component:
                         },
                     ),
                 ),
-                rx.button("Eliminar", size="1", on_click=lambda id=user["id"]: State.delete_row(id), color_scheme="red"),
+                rx.button("Eliminar", size="1", on_click=lambda id=user_data["id"]: State.delete_row(id), color_scheme="red"),
             )
         )
     )
@@ -132,12 +125,10 @@ def users_table() -> rx.Component:
         rx.table.header(
             rx.table.row(
                 rx.table.column_header_cell("ID", size="6"),
-                rx.table.column_header_cell("Titulo", size="6"),
-                rx.table.column_header_cell("Descripcion", size="6"),
-                rx.table.column_header_cell("URL Imagen", size="6"),
-                rx.table.column_header_cell("Detalles", size="6"),
-                rx.table.column_header_cell("Itinerario", size="6"),
-                rx.table.column_header_cell("Precio", size="6"),
+                rx.table.column_header_cell("Nombre", size="6"),
+                rx.table.column_header_cell("Email", size="6"),
+                rx.table.column_header_cell("Contraseña", size="6"),
+                rx.table.column_header_cell("Tipo de usuario", size="6"),
                 rx.table.column_header_cell("", size="6"),
             ),
         ),
@@ -166,7 +157,7 @@ def users_page() -> rx.Component:
                 rx.vstack(
                     rx.box(
                         rx.box(
-                            rx.heading("Ofertas", size="9", margin_y=".5em"),
+                            rx.heading("Usuarios", size="9", margin_y=".5em"),
                             rx.dialog.root(
                                 rx.dialog.trigger(
                                   rx.button("Agregar", size="3", width="25%", style={"cursor":"pointer"}),
@@ -175,42 +166,26 @@ def users_page() -> rx.Component:
                                     rx.heading("Agregar Oferta", font_size="40px", margin_y=".5em"),
                                     rx.form(
                                         rx.vstack(
-                                            rx.text("Ingrese la imagen:", size="4"),
-                                            rx.upload(id="upload"),
-                                            rx.button(
-                                                "Subir Imagen",
-                                                on_click=State.handle_upload(rx.upload_files("upload")),
-                                            ),
+                                            rx.text("Nombre:", size="4"),
+                                            rx.input(placeholder="Ingrese el nombre", name="username", type="text", size='3', width="100%"),
                                             spacing="3",
                                             margin_y="1.5em",
                                         ),
                                         rx.vstack(
-                                            rx.text("Titulo:", size="4"),
-                                            rx.input(placeholder="Ingrese el titulo", name="title", type="text", size='3', width="100%"),
+                                            rx.text("Email:", size="4"),
+                                            rx.input(placeholder="Ingrese el correo", name="email", type="email", size='3', width="100%"),
                                             spacing="3",
                                             margin_y="1.5em",
                                         ),
                                         rx.vstack(
-                                            rx.text("Descripcion:", size="4"),
-                                            rx.input(placeholder="Ingrese la descripcion", name="description", type="text", size='3', width="100%"),
+                                            rx.text("Contraseña:", size="4"),
+                                            rx.input(placeholder="Ingrese la contraseña", name="password", type="password", size='3', width="100%"),
                                             spacing="3",
                                             margin_y="1.5em",
                                         ),
                                         rx.vstack(
-                                            rx.text("Detalles:", size="4"),
-                                            rx.input(placeholder="Ingrese los detalles", name="details", type="text", size='3', width="100%"),
-                                            spacing="3",
-                                            margin_y="1.5em",
-                                        ),
-                                        rx.vstack(
-                                            rx.text("Itinerario:", size="4"),
-                                            rx.input(placeholder="Ingrese el itinerario", name="itinerary", type="text", size='3', width="100%"),
-                                            spacing="3",
-                                            margin_y="1.5em",
-                                        ),
-                                        rx.vstack(
-                                            rx.text("Precio:", size="4"),
-                                            rx.input(placeholder="Ingrese el precio", name="price", type="number", size='3', width="100%"),
+                                            rx.text("Tipo:", size="4"),
+                                            rx.input(placeholder="Ingrese el Tipo de usuario que es", name="type", type="text", size='3', width="100%"),
                                             spacing="3",
                                             margin_y="1.5em",
                                         ),

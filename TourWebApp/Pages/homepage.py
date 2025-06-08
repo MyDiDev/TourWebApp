@@ -48,7 +48,7 @@ def render_offer_card(offer) -> rx.Component:
             rx.text(offer["description"], size="2"),
             rx.link(
                 rx.button("Ver Mas", margin_top="1em", size="2", width="100%", style={"cursor":"pointer"}),
-                href=f"/description?id={offer['id']}"
+                href=f"/description?offer_id={offer['id']}"
             ),
             padding_x=".5em",
             padding_bottom="1em",
