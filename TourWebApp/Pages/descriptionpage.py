@@ -4,26 +4,27 @@ from ..DB.connection import Offer
 
 class DescriptionState(rx.State):
     offer: list[dict] = []
-    id: int= -1
+    id: int | str = 0
     title: str = ""
     desc:str = ""
     image_url:str = ""
     details:str = ""
     itinerary:str = ""
     price:float = 0
+    uid: int | str = 0
 
     @rx.event
     def get_offers(self):
-        id = self.router.page.params.get("offer_id")
+        self.id = self.router.page.params.get("offer_id")
+        self.uid = self.router.page.params.get("uid")
         
-        print(id)
+        print(self.id)
 
         offer_conn = Offer("","","","","",0)
-        id = int(id)
-        offer_data = offer_conn.read_offer_by_id(id=id)
+        self.id = int(self.id)
+        offer_data = offer_conn.read_offer_by_id(id=self.id)
         
         for offer_row in offer_data:
-            self.id = int(offer_row[0])
             self.title = str(offer_row[1])
             self.desc = str(offer_row[2])
             self.image_url = str(offer_row[3])
@@ -33,9 +34,8 @@ class DescriptionState(rx.State):
 
 
 def description_page() -> rx.Component:
-    rx
     return render_page(
-        rx.box(
+        rx.vstack(
             rx.desktop_only(
                 rx.hstack(
                     rx.vstack(
@@ -44,42 +44,46 @@ def description_page() -> rx.Component:
                     rx.vstack(
                         rx.vstack(
                             rx.heading(DescriptionState.title, size="9"),
-                            rx.text(DescriptionState.desc, size="4",
-                            margin_left=".5em"),
+                            rx.separator(),
+                            rx.text(DescriptionState.desc, size="4"
+                            ),
                             rx.hstack(
-                                rx.icon("list-collapse"),
-                                rx.heading(" - Detalles", size="5"),
+                                rx.heading("Detalles", size="5"),
                                 spacing="2",
                                 justify="center",
                                 align="center",
-                                margin_left=".5em"
                             ),
                             rx.text(DescriptionState.details, size="3",
-                            margin_left=".5em"),
+                            ),
                             rx.hstack(
-                                rx.icon("receipt-text"),
-                                rx.heading(" - Itinerario", size="5"),
+                                rx.heading("Itinerario", size="5"),
                                 spacing="2",
                                 justify="center",
                                 align="center",
-                                margin_left=".5em"
                             ),
-                            rx.text(DescriptionState.itinerary, size="3", margin_left=".5em"),
-                            rx.heading("Precio:\n", f"{DescriptionState.price:,} RD$", margin_left=".5em"),
+                            rx.text(DescriptionState.itinerary, size="3"),
+                            rx.heading("Precio:\n", f"{DescriptionState.price:,} RD$"),
                             rx.link(
-                                rx.button("Pagar", width="100%", size="3", margin_y=".5em"),
-                                href=f"/payment?id={DescriptionState.id}",
+                                rx.button("Pagar", width="100%", size="3", margin_y=".5em", style={"cursor":"pointer"}),
+                                href=f"/payment?id={DescriptionState.id}&uid={DescriptionState.uid}",
                                 width="100%",
-                                margin_left=".5em",
                                 style={"cursor":"pointer"}
                             ),
-                            spacing="5",
+                            spacing="4",
                             width="600px"
                         ),
                         justify="center",
-                        spacing="7",
+                        spacing="4",
+                        padding="1em",
+                        style={
+                            "background": "rgba( 0, 0, 0, 0.3 )",
+                            "backdrop-filter": "blur(20px)",
+                            "-webkit-backdrop-filter": "blur(20px)",
+                            "border-radius": "10px",
+                            "border": "1px solid rgba( 255, 255, 255, 0.18 )",
+                        },
                     ),
-                    spacing="4",
+                    spacing="6",
                     width="100%",
                     style={
                         "justify-content":"space-evenly",
@@ -88,7 +92,9 @@ def description_page() -> rx.Component:
                 ),
             ),
             padding="2.5em",
-            heigth="100dvh",
+            justify="center",
+            align="center",
+            min_height="100dvh",
             on_mount=DescriptionState.get_offers,
         )
     )

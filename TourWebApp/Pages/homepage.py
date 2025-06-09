@@ -48,7 +48,7 @@ def render_offer_card(offer) -> rx.Component:
             rx.text(offer["description"], size="2"),
             rx.link(
                 rx.button("Ver Mas", margin_top="1em", size="2", width="100%", style={"cursor":"pointer"}),
-                href=f"/description?offer_id={offer['id']}"
+                href=f"/description?offer_id={offer['id']}&uid={LoginState.id}"
             ),
             padding_x=".5em",
             padding_bottom="1em",
@@ -175,8 +175,9 @@ def home_page() -> rx.Component:
                             padding="1em",
                             margin_y="1em",
                         ),
-                        rx.heading("Ofertas Destacadas", size="9", margin_y="2em", text_align="center"),
 
+                        rx.heading("Ofertas Destacadas", size="9", margin_y="2em", text_align="center"),
+                    
                         rx.hstack(
                             rx.foreach(HomePageState.offers, render_offer_card),
                             on_mount=HomePageState.get_offers,
@@ -187,7 +188,7 @@ def home_page() -> rx.Component:
                                 "flex-wrap":"wrap",
                             },
                         ),
-                
+
                         rx.heading("Sobre Nosotros", size="9", margin_y="2em", text_align="center"),
                         rx.vstack(
                             rx.hstack(

@@ -1,4 +1,5 @@
 import mysql.connector
+import datetime
 
 class Connection:
     def __init__(self):
@@ -154,7 +155,7 @@ class Contact:
     
 
 class Schedule:
-    def __init__(self, name:str, email:str, phone:str, id_tour:int, id_user:int, id_payment:int, date:str, people_amount:int):
+    def __init__(self, name:str, email:str, phone:str, id_tour:int, id_user:int, id_payment:int, date, people_amount:int):
         self.name = name
         self.email = email
         self.phone = phone
@@ -169,7 +170,15 @@ class Schedule:
 
     def add_schedule(self):
         try:
-            self.cur.callproc("SP_INSERTAR_RESERVAS", [self.name, self.email, self.phone, self.id_tour, self.id_user, self.id_payment, self.date, self.people_amount])
+            formatted_date = self.date
+            if isinstance(self.date, datetime.datetime):
+                formatted_date = self.date.strftime("%Y-%m-%d %H:%M:%S")
+            
+            data = [self.name, self.email, self.phone, self.id_tour, self.id_user, self.id_payment, formatted_date, self.people_amount]
+            for value in data:
+                print(value)
+
+            self.cur.callproc("SP_INSERTAR_RESERVAS", [self.name, self.email, self.phone, self.id_tour, self.id_user, self.id_payment, formatted_date, self.people_amount])
             self.cnx.commit()
         except Exception as e:
             raise e
@@ -230,6 +239,15 @@ class Transactions:
     def read_payments(self):
         try:
             self.cur.callproc("SP_LEER_PAGOS")
+            for result in self.cur.stored_results():
+                payments = result.fetchall()
+            return payments
+        except Exception as e:
+            raise e
+        
+    def payments_get_id(self, amount:float):
+        try:
+            self.cur.callproc("SP_LEER_PAGOS_ID", [amount])
             for result in self.cur.stored_results():
                 payments = result.fetchall()
             return payments
