@@ -5,8 +5,6 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/) 
 
 
----
-
 TourGo es una landing page simple y elegante desarrollada con **[Reflex](https://reflex.dev)**. esta web está pensada como una interfaz de presentación para servicios turísticos, ideal para mostrar ofertas, detalles de actividades y una sección de reservas.
 
 
